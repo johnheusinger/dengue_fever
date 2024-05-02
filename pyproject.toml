@@ -1,0 +1,48 @@
+[build-system]
+requires = [ "setuptools",]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dengue_fever"
+readme = "README.md"
+dynamic = [ "dependencies", "version",]
+
+[project.scripts]
+dengue-fever = "dengue_fever.__main__:main"
+
+[tool.kedro]
+package_name = "dengue_fever"
+project_name = "dengue_fever"
+kedro_init_version = "0.19.5"
+tools = [ "Linting", "Testing", "Data Structure",]
+example_pipeline = "True"
+source_dir = "src"
+
+[tool.ruff]
+line-length = 88
+show-fixes = true
+select = [ "F", "W", "E", "I", "UP", "PL", "T201",]
+ignore = [ "E501",]
+
+[project.entry-points."kedro.hooks"]
+
+[tool.pytest.ini_options]
+addopts = "--cov-report term-missing --cov src/dengue_fever -ra"
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = [ "pragma: no cover", "raise NotImplementedError",]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.setuptools.dynamic.dependencies]
+file = "requirements.txt"
+
+[tool.setuptools.dynamic.version]
+attr = "dengue_fever.__version__"
+
+[tool.setuptools.packages.find]
+where = [ "src",]
+namespaces = false
