@@ -1,4 +1,7 @@
+import numpy as np
 import pandas as pd
+from sklearn.impute import KNNImputer
+from sklearn.preprocessing import MinMaxScaler
 
 
 def merge_features_and_label(feature_train: pd.DataFrame, feature_test: pd.DataFrame, label_train:pd.DataFrame) -> pd.DataFrame:
@@ -11,7 +14,6 @@ def merge_features_and_label(feature_train: pd.DataFrame, feature_test: pd.DataF
 
 def encoding(data: pd.DataFrame) -> pd.DataFrame:
     """Perform encoding on the data."""
-    import numpy as np
 
     # one-hot encoding for city
     data_encoded = pd.get_dummies(data, columns=["city"], drop_first=True)
@@ -28,8 +30,6 @@ def dropping_columns(data: pd.DataFrame, list_of_columns_to_drop: list[str]) -> 
 
 def impute_missing_values(data: pd.DataFrame) -> pd.DataFrame:
     """Impute missing values in the data, with the exception of the 'train' column."""
-
-    from sklearn.impute import KNNImputer
 
     # Separate the 'train' column from the rest of the DataFrame
     train_column = data[['data_type', 'total_cases']]
@@ -48,20 +48,15 @@ def impute_missing_values(data: pd.DataFrame) -> pd.DataFrame:
 def scale(data: pd.DataFrame) -> pd.DataFrame:
     """Scale the data using MinMaxScaler."""
 
-    from sklearn.preprocessing import MinMaxScaler
-
     # Separate the 'train' column from the rest of the DataFrame
-
     train_column = data[['data_type', 'total_cases']]
     data = data.drop(columns=['data_type', 'total_cases'])
 
     # Perform the scaling
-
     scaler = MinMaxScaler()
     data_scaled = scaler.fit_transform(data)
 
     # Convert the scaled data back to a DataFrame and re-add the 'train' column
-
     data_scaled = pd.DataFrame(data_scaled, columns=data.columns, index=data.index)
     data_scaled[['data_type', 'total_cases']] = train_column
 
