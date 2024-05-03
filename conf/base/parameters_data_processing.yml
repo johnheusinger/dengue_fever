@@ -1,0 +1,4 @@
+columns_to_drop:
+  - 'week_start_date'
+  - 'year'
+  - 'weekofyear'
