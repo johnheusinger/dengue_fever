@@ -69,6 +69,10 @@ shuttles:
   load_args:
     engine: openpyxl
 
+submission_data:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/submission_data.csv
+
 preprocessed_companies:
   type: pandas.ParquetDataset
   filepath: data/02_intermediate/preprocessed_companies.pq
