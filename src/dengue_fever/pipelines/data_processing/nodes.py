@@ -1,68 +1,63 @@
+import numpy as np
 import pandas as pd
+from sklearn.impute import KNNImputer
+from sklearn.preprocessing import MinMaxScaler
 
 
-def _is_true(x: pd.Series) -> pd.Series:
-    return x == "t"
+def merge_features_and_label(feature_train: pd.DataFrame, feature_test: pd.DataFrame, label_train:pd.DataFrame) -> pd.DataFrame:
+    """Concatenate feature tables and merge the train labels."""
+    feature_train.loc[:, "data_type"] = "train"
+    feature_test.loc[:, "data_type"] = "test"
+    total_features = pd.concat([feature_train, feature_test], axis=0)
+    total_data = pd.merge(total_features, label_train, on=["city", "year", "weekofyear"], how="left")
+    return total_data
 
+def encoding(data: pd.DataFrame) -> pd.DataFrame:
+    """Perform encoding on the data."""
 
-def _parse_percentage(x: pd.Series) -> pd.Series:
-    x = x.str.replace("%", "")
-    x = x.astype(float) / 100
-    return x
+    # one-hot encoding for city
+    data_encoded = pd.get_dummies(data, columns=["city"], drop_first=True)
 
+    # cyclical encoding for weekofyear
+    data_encoded['weekofyear_sin'] = np.sin(2*np.pi*data_encoded['weekofyear']/52)
+    data_encoded['weekofyear_cos'] = np.cos(2*np.pi*data_encoded['weekofyear']/52)
+    return data_encoded
 
-def _parse_money(x: pd.Series) -> pd.Series:
-    x = x.str.replace("$", "").str.replace(",", "")
-    x = x.astype(float)
-    return x
+def dropping_columns(data: pd.DataFrame, list_of_columns_to_drop: list[str]) -> pd.DataFrame:
+    """Drop the columns from the data."""
+    data_dropped = data.drop(columns=list_of_columns_to_drop)
+    return data_dropped
 
+def impute_missing_values(data: pd.DataFrame) -> pd.DataFrame:
+    """Impute missing values in the data, with the exception of the 'train' column."""
 
-def preprocess_companies(companies: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for companies.
+    # Separate the 'train' column from the rest of the DataFrame
+    train_column = data[['data_type', 'total_cases']]
+    data = data.drop(columns=['data_type', 'total_cases'])
 
-    Args:
-        companies: Raw data.
-    Returns:
-        Preprocessed data, with `company_rating` converted to a float and
-        `iata_approved` converted to boolean.
-    """
-    companies["iata_approved"] = _is_true(companies["iata_approved"])
-    companies["company_rating"] = _parse_percentage(companies["company_rating"])
-    return companies
+    # Perform the imputation
+    imputer = KNNImputer(n_neighbors=5)
+    data_imputed = imputer.fit_transform(data)
 
+    # Convert the imputed data back to a DataFrame and re-add the 'train' column
+    data_imputed = pd.DataFrame(data_imputed, columns=data.columns, index=data.index)
+    data_imputed[['data_type', 'total_cases']] = train_column
 
-def preprocess_shuttles(shuttles: pd.DataFrame) -> pd.DataFrame:
-    """Preprocesses the data for shuttles.
+    return data_imputed
 
-    Args:
-        shuttles: Raw data.
-    Returns:
-        Preprocessed data, with `price` converted to a float and `d_check_complete`,
-        `moon_clearance_complete` converted to boolean.
-    """
-    shuttles["d_check_complete"] = _is_true(shuttles["d_check_complete"])
-    shuttles["moon_clearance_complete"] = _is_true(shuttles["moon_clearance_complete"])
-    shuttles["price"] = _parse_money(shuttles["price"])
-    return shuttles
+def scale(data: pd.DataFrame) -> pd.DataFrame:
+    """Scale the data using MinMaxScaler."""
 
+    # Separate the 'train' column from the rest of the DataFrame
+    train_column = data[['data_type', 'total_cases']]
+    data = data.drop(columns=['data_type', 'total_cases'])
 
-def create_model_input_table(
-    shuttles: pd.DataFrame, companies: pd.DataFrame, reviews: pd.DataFrame
-) -> pd.DataFrame:
-    """Combines all data to create a model input table.
+    # Perform the scaling
+    scaler = MinMaxScaler()
+    data_scaled = scaler.fit_transform(data)
 
-    Args:
-        shuttles: Preprocessed data for shuttles.
-        companies: Preprocessed data for companies.
-        reviews: Raw data for reviews.
-    Returns:
-        Model input table.
+    # Convert the scaled data back to a DataFrame and re-add the 'train' column
+    data_scaled = pd.DataFrame(data_scaled, columns=data.columns, index=data.index)
+    data_scaled[['data_type', 'total_cases']] = train_column
 
-    """
-    rated_shuttles = shuttles.merge(reviews, left_on="id", right_on="shuttle_id")
-    rated_shuttles = rated_shuttles.drop("id", axis=1)
-    model_input_table = rated_shuttles.merge(
-        companies, left_on="company_id", right_on="id"
-    )
-    model_input_table = model_input_table.dropna()
-    return model_input_table
+    return data_scaled

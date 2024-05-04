@@ -47,11 +47,31 @@ reviews:
   type: pandas.CSVDataset
   filepath: data/01_raw/reviews.csv
 
+dengue_features_test:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/dengue_features_test.csv
+
+dengue_features_train:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/dengue_features_train.csv
+
+dengue_labels_train:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/dengue_labels_train.csv
+
+submission_format:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/submission_format.csv
+
 shuttles:
   type: pandas.ExcelDataset
   filepath: data/01_raw/shuttles.xlsx
   load_args:
     engine: openpyxl
+
+submission_data:
+  type: pandas.CSVDataset
+  filepath: data/07_model_output/submission_data.csv
 
 preprocessed_companies:
   type: pandas.ParquetDataset

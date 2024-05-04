@@ -1,12 +1,6 @@
 model_options:
-  test_size: 0.2
   random_state: 3
-  features:
-    - engines
-    - passenger_capacity
-    - crew
-    - d_check_complete
-    - moon_clearance_complete
-    - iata_approved
-    - company_rating
-    - review_scores_rating
+  n_estimators: 200
+  max_depth: 7
+  min_samples_leaf: 4
+  min_samples_split: 5
