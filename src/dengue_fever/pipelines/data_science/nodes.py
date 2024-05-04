@@ -55,6 +55,7 @@ def make_prediction(
     Args:
         data: Data on which to make predictions.
         regressor: Trained model.
+        submission_data: Data formatted for submission.
 
     Returns:
         A tuple of the input data and the predictions.
