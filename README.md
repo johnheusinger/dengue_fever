@@ -61,14 +61,14 @@ kedro run
 
 Getting familiar with the data:
 
-![img.png](./data/images/img.png)
+![img.png](./images/img.png)
 
 Checking for seasonality
 
-![img_1.png](./data/images/img_1.png)
+![img_1.png](./images/img_1.png)
 
 Checking for correlation
-![img_2.png](./data/images/img_2.png)
+![img_2.png](./images/img_2.png)
 
 Checking for missing values
 ```city                                       0
