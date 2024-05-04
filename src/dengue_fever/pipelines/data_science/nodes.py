@@ -31,22 +31,6 @@ def train_model(data: pd.DataFrame, model_options) -> RandomForestRegressor:
 
     return regressor
 
-
-''' def evaluate_model(
-    regressor: RandomForestRegressor, X_test: pd.DataFrame, y_test: pd.Series
-):
-    """Calculates and logs the coefficient of determination.
-
-    Args:
-        regressor: Trained model.
-        X_test: Testing data of independent features.
-        y_test: Testing data for price.
-    """
-    y_pred = regressor.predict(X_test)
-    score = r2_score(y_test, y_pred)
-    logger = logging.getLogger(__name__)
-    logger.info("Model has a coefficient R^2 of %.3f on test data.", score) '''
-
 def make_prediction(
     data: pd.DataFrame, regressor: RandomForestRegressor, submission_data: pd.DataFrame
 ) -> Tuple[pd.DataFrame, pd.Series]:
@@ -58,7 +42,7 @@ def make_prediction(
         submission_data: Data formatted for submission.
 
     Returns:
-        A tuple of the input data and the predictions.
+        The submission data DataFrame updated with the predictions.
     """
     # Filter out test data and drop data_type column
     data = data[data['data_type'] == 'test']
