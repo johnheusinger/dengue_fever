@@ -1,7 +1,5 @@
-from typing import Tuple
 import numpy as np
 import pandas as pd
-# fix the line below
 from sklearn.ensemble import RandomForestRegressor
 
 def train_model(data: pd.DataFrame, model_options) -> RandomForestRegressor:
@@ -13,8 +11,6 @@ def train_model(data: pd.DataFrame, model_options) -> RandomForestRegressor:
 
     Returns:
         Trained model.
-
-        RandomForestRegressor(n_estimators=200,max_depth=7,min_samples_leaf=4,min_samples_split=5)
     """
     # Filter out test data and drop data_type column
     data = data[data['data_type'] == 'train']
@@ -31,9 +27,7 @@ def train_model(data: pd.DataFrame, model_options) -> RandomForestRegressor:
 
     return regressor
 
-def make_prediction(
-    data: pd.DataFrame, regressor: RandomForestRegressor, submission_data: pd.DataFrame
-) -> Tuple[pd.DataFrame, pd.Series]:
+def make_prediction(data: pd.DataFrame, regressor: RandomForestRegressor, submission_data: pd.DataFrame) -> pd.DataFrame:
     """Make predictions using the trained model.
 
     Args:
@@ -53,4 +47,3 @@ def make_prediction(
     submission_data['total_cases'] = y_pred.astype(int)
 
     return submission_data
-
